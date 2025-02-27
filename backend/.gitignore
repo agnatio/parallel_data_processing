@@ -1,0 +1,93 @@
+# Python bytecode files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+venv/
+env/
+ENV/
+.env
+.venv
+env.bak/
+venv.bak/
+
+# Environment configuration files
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+!.env.example
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+.eggs/
+*.egg
+*.whl
+
+# Testing and coverage
+.coverage
+.coverage.*
+htmlcov/
+.pytest_cache/
+coverage.xml
+*.cover
+.hypothesis/
+nosetests.xml
+
+# Logs
+logs/
+*.log
+log.txt
+
+# IDE specific files
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+*.sublime-project
+*.sublime-workspace
+
+# Database files
+*.db
+*.sqlite3
+*.sqlite
+*.sql
+
+# Temporary files
+.tmp/
+.temp/
+tmp/
+temp/
+.cache/
+
+# Documentation builds
+docs/_build/
+site/
+
+# Docker
+docker-compose.override.yml
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# MyPy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Profiling data
+.prof
+
+# Local development files
+local_settings.py
+local.py
+
+# Secret files
+*.pem
+*.key
+secret
