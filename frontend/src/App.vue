@@ -5,7 +5,7 @@ import { RouterLink, RouterView } from 'vue-router'
 <template>
   <header>
     <img alt="Vue logo" class="logo" src="@/assets/fox.ico"
-         width="125" height="125" />
+         width="30" height="30" />
 
     <RouterView />
 
