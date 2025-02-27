@@ -1,19 +1,18 @@
 <template>
     <div class="max-w-2xl mx-auto px-2 py-2">
-
         <div
-             class="grid grid-cols-1 lg:grid-cols-3 gap-2 bg-white rounded-lg shadow-lg p-6 h-[500px]">
+             class="grid grid-cols-1 lg:grid-cols-3 gap-2 bg-white rounded-lg shadow-lg p-6 h-[460px]">
             <!-- Form Section -->
             <div class="lg:col-span-1 h-full">
                 <GeneratorForm :is-loading="loading"
                                :has-generated-data="hasGeneratedData"
-                               :initial-rows="rows"
-                               :initial-columns="columns"
+                               :initial-rows="props.rows"
+                               :initial-columns="props.columns"
                                :initial-format="selectedFormat"
                                @generate="generateData"
                                @download="downloadData"
-                               @update:rows="rows = $event"
-                               @update:columns="columns = $event"
+                               @update:rows="updateRows"
+                               @update:columns="updateColumns"
                                @update:format="handleFormatChange" />
             </div>
 
@@ -30,16 +29,37 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue';
+import { ref, computed, watch, defineProps, defineEmits } from 'vue';
 import GeneratorForm from './GeneratorForm.vue';
 import DataPreview from './DataPreview.vue';
 import { dataService } from '@/services/apiClient';
 
-// Form inputs
-const rows = ref(10);
-const columns = ref(10);
+// Define props with default values
+const props = defineProps({
+    rows: {
+        type: Number,
+        default: 10
+    },
+    columns: {
+        type: Number,
+        default: 10
+    },
+    name: {
+        type: String,
+        default: 'Data Generator'
+    }
+});
+
+// Define emits for queue tracking
+const emit = defineEmits(['generation-start', 'generation-complete']);
+
+// We'll only keep the state that's not coming from props
 const selectedFormat = ref('json');
 const selectedDataTypes = ref([]);
+
+// Form state for current values (updated by the form component)
+const currentRows = ref(props.rows);
+const currentColumns = ref(props.columns);
 
 // Data state
 const jsonData = ref(null);
@@ -53,14 +73,20 @@ const hasGeneratedData = computed(() => {
         (selectedFormat.value === 'csv' && csvData.value);
 });
 
-// Watch for column changes to adjust data types
-watch(columns, (newValue) => {
-    if (selectedDataTypes.value.length > newValue) {
-        selectedDataTypes.value = selectedDataTypes.value.slice(0, newValue);
-    }
-});
+// Methods for updating state from form events
+function updateRows(value) {
+    currentRows.value = value;
+}
 
-// Methods
+function updateColumns(value) {
+    currentColumns.value = value;
+
+    // Still maintain this behavior for data types
+    if (selectedDataTypes.value.length > value) {
+        selectedDataTypes.value = selectedDataTypes.value.slice(0, value);
+    }
+}
+
 function handleFormatChange(newFormat) {
     // Clear data when format changes
     if (newFormat === 'json') {
@@ -76,10 +102,13 @@ async function generateData(formData) {
     error.value = '';
 
     try {
-        // Use the form data or fall back to component state
-        const requestRows = formData?.rows || rows.value;
-        const requestColumns = formData?.columns || columns.value;
+        // Use the form data or fall back to current values
+        const requestRows = formData?.rows || currentRows.value;
+        const requestColumns = formData?.columns || currentColumns.value;
         const requestFormat = formData?.format || selectedFormat.value;
+
+        // Emit event to signal generation start for queue visualization
+        emit('generation-start', props.name, requestColumns);
 
         // Prepare parameters for the API call
         const params = {
@@ -100,9 +129,15 @@ async function generateData(formData) {
             csvData.value = response.data;
             jsonData.value = null;
         }
+
+        // Emit event to signal generation complete for queue visualization
+        emit('generation-complete', props.name);
     } catch (err) {
         console.error('Error generating data:', err);
         error.value = err.response?.data?.detail || err.message || 'Failed to generate data';
+
+        // Also emit completion in case of error
+        emit('generation-complete', props.name);
     } finally {
         loading.value = false;
     }
@@ -112,9 +147,9 @@ async function downloadData(formData) {
     if (!hasGeneratedData.value) return;
 
     try {
-        // Use the form data or fall back to component state
-        const requestRows = formData?.rows || rows.value;
-        const requestColumns = formData?.columns || columns.value;
+        // Use the form data or fall back to current values
+        const requestRows = formData?.rows || currentRows.value;
+        const requestColumns = formData?.columns || currentColumns.value;
         const requestFormat = formData?.format || selectedFormat.value;
 
         // Prepare parameters for the URL

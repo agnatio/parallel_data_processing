@@ -1,6 +1,6 @@
 <template>
-    <div class="bg-gray-50 p-4 rounded-lg w-full h-full">
-        <div class="space-y-4">
+    <div class="bg-gray-50 p-1 rounded-lg w-full h-full">
+        <div class="space-y-1">
             <div class="space-y-2">
                 <label for="rows"
                        class="block text-sm font-medium text-gray-700">Rows:</label>
@@ -36,15 +36,16 @@
                         class="w-full px-4 py-2 bg-indigo-600 text-white font-medium rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
                         :disabled="isLoading">
                     {{ isLoading ? 'Generating...' :
-                        'Generate Data' }}
+                        'Generate' }}
                 </button>
 
                 <button @click="handleDownload"
-                        class="w-full px-4 py-2 bg-green-600 text-white font-medium rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                        class="w-full px-2 py-2 bg-green-600 text-white font-medium rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed"
                         :disabled="isLoading || !hasGeneratedData">
-                    Download {{
-                        formData.format.toUpperCase() }}
+                    Download
                 </button>
+                <!-- {{
+                        formData.format.toUpperCase() }} -->
             </div>
         </div>
     </div>

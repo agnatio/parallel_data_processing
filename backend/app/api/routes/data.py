@@ -25,6 +25,8 @@ router = APIRouter(
 )
 
 
+import asyncio  # Add this import at the top with other imports
+
 @router.get("/generate", status_code=status.HTTP_200_OK)
 async def generate_data(
     rows: int = Query(10, ge=1, le=1000, description="Number of rows to generate"),
@@ -48,6 +50,10 @@ async def generate_data(
         Data in the requested format
     """
     try:
+        # Add delay based on number of columns (1 second per column)
+        logger.info(f"Delaying response for {columns} seconds based on column count")
+        await asyncio.sleep(columns)
+        
         # Validate data types if provided
         if data_types:
             for dt in data_types:
@@ -107,7 +113,6 @@ async def generate_data(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Error generating data: {str(e)}"
         )
-
 
 @router.get("/sample/{sample_type}", status_code=status.HTTP_200_OK)
 async def get_sample_data(
