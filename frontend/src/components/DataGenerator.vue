@@ -30,57 +30,21 @@
                     </select>
                 </div>
 
-                <div class="form-group">
-                    <label class="toggle-label">
-                        <input type="checkbox"
-                               v-model="showAdvancedOptions" />
-                        Show Advanced Options
-                    </label>
-                </div>
 
-                <div v-if="showAdvancedOptions"
-                     class="advanced-options">
-                    <h3>Data Types</h3>
-                    <p class="help-text">Specify data types
-                        for each column</p>
-
-                    <div class="data-types-list">
-                        <div v-for="(type, index) in selectedDataTypes"
-                             :key="index"
-                             class="data-type-item">
-                            <select v-model="selectedDataTypes[index]"
-                                    class="form-control data-type-select">
-                                <option v-for="type in availableDataTypes"
-                                        :key="type"
-                                        :value="type">
-                                    {{ type }}
-                                </option>
-                            </select>
-                            <button @click="removeDataType(index)"
-                                    class="btn btn-danger btn-sm">✕</button>
-                        </div>
-                    </div>
-
-                    <button @click="addDataType"
-                            class="btn btn-primary btn-sm add-type-btn"
-                            v-if="selectedDataTypes.length < columns">
-                        Add Data Type
-                    </button>
-                </div>
 
                 <div class="action-buttons">
                     <button @click="generateData"
                             class="btn btn-primary"
                             :disabled="loading">
                         {{ loading ? 'Generating...' :
-                        'Generate Data' }}
+                            'Generate Data' }}
                     </button>
 
                     <button @click="downloadData"
                             class="btn btn-success"
                             :disabled="loading || !hasGeneratedData">
                         Download {{
-                        selectedFormat.toUpperCase() }}
+                            selectedFormat.toUpperCase() }}
                     </button>
 
                     <div class="dropdown">
@@ -210,7 +174,6 @@ export default {
             rows: 10,
             columns: 10,
             selectedFormat: 'json',
-            showAdvancedOptions: false,
             selectedDataTypes: [],
 
             // Data state
@@ -327,12 +290,7 @@ export default {
                 params.append('columns', this.columns);
                 params.append('format', this.selectedFormat);
 
-                // Add data types if specified
-                if (this.showAdvancedOptions && this.selectedDataTypes.length > 0) {
-                    this.selectedDataTypes.forEach(type => {
-                        params.append('data_types', type);
-                    });
-                }
+
 
                 // Use API URL from environment variable or default
                 const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
@@ -370,12 +328,7 @@ export default {
                 params.append('columns', this.columns);
                 params.append('format', this.selectedFormat);
 
-                // Add data types if specified
-                if (this.showAdvancedOptions && this.selectedDataTypes.length > 0) {
-                    this.selectedDataTypes.forEach(type => {
-                        params.append('data_types', type);
-                    });
-                }
+
 
                 // Use API URL from environment variable or default
                 const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
@@ -421,262 +374,3 @@ export default {
     }
 };
 </script>
-
-<style scoped>
-.data-generator {
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 20px;
-    font-family: Arial, sans-serif;
-}
-
-.generator-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-}
-
-.controls-panel {
-    flex: 1;
-    min-width: 300px;
-    background-color: #f8f9fa;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.preview-panel {
-    flex: 2;
-    min-width: 500px;
-    background-color: white;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.form-group {
-    margin-bottom: 15px;
-}
-
-.form-control {
-    display: block;
-    width: 100%;
-    padding: 8px 12px;
-    font-size: 16px;
-    border: 1px solid #ced4da;
-    border-radius: 4px;
-}
-
-.toggle-label {
-    display: flex;
-    align-items: center;
-    cursor: pointer;
-}
-
-.toggle-label input {
-    margin-right: 8px;
-}
-
-.advanced-options {
-    margin-top: 20px;
-    padding-top: 15px;
-    border-top: 1px solid #dee2e6;
-}
-
-.help-text {
-    font-size: 14px;
-    color: #6c757d;
-    margin-bottom: 10px;
-}
-
-.data-types-list {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    margin-bottom: 15px;
-}
-
-.data-type-item {
-    display: flex;
-    gap: 8px;
-}
-
-.data-type-select {
-    flex: 1;
-}
-
-.action-buttons {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-top: 25px;
-}
-
-.btn {
-    padding: 8px 16px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-weight: 500;
-}
-
-.btn-primary {
-    background-color: #007bff;
-    color: white;
-}
-
-.btn-success {
-    background-color: #28a745;
-    color: white;
-}
-
-.btn-info {
-    background-color: #17a2b8;
-    color: white;
-}
-
-.btn-secondary {
-    background-color: #6c757d;
-    color: white;
-}
-
-.btn-danger {
-    background-color: #dc3545;
-    color: white;
-}
-
-.btn-sm {
-    padding: 4px 8px;
-    font-size: 14px;
-}
-
-.btn:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-}
-
-.dropdown {
-    position: relative;
-}
-
-.dropdown-menu {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    z-index: 1000;
-    display: block;
-    min-width: 160px;
-    padding: 8px 0;
-    margin-top: 4px;
-    background-color: white;
-    border-radius: 4px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-}
-
-.dropdown-item {
-    display: block;
-    padding: 8px 16px;
-    cursor: pointer;
-}
-
-.dropdown-item:hover {
-    background-color: #f8f9fa;
-}
-
-.error-message {
-    padding: 12px;
-    background-color: #f8d7da;
-    color: #721c24;
-    border-radius: 4px;
-    margin-bottom: 20px;
-}
-
-.loading-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 40px 0;
-}
-
-.spinner {
-    border: 4px solid rgba(0, 0, 0, 0.1);
-    border-radius: 50%;
-    border-top: 4px solid #007bff;
-    width: 40px;
-    height: 40px;
-    animation: spin 1s linear infinite;
-    margin-bottom: 16px;
-}
-
-@keyframes spin {
-    0% {
-        transform: rotate(0deg);
-    }
-
-    100% {
-        transform: rotate(360deg);
-    }
-}
-
-.data-preview {
-    padding: 15px;
-    border: 1px solid #dee2e6;
-    border-radius: 4px;
-}
-
-.metadata-info {
-    display: flex;
-    gap: 20px;
-    margin-bottom: 15px;
-    font-size: 14px;
-}
-
-.table-responsive {
-    overflow-x: auto;
-    margin-bottom: 20px;
-}
-
-.data-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-.data-table th,
-.data-table td {
-    padding: 8px;
-    border: 1px solid #dee2e6;
-    text-align: left;
-}
-
-.data-table th {
-    background-color: #f8f9fa;
-    font-weight: 600;
-}
-
-.data-table tr:nth-child(even) {
-    background-color: #f2f2f2;
-}
-
-.raw-data-toggle {
-    margin-top: 15px;
-}
-
-.raw-data {
-    max-height: 400px;
-    overflow: auto;
-    padding: 15px;
-    margin-top: 10px;
-    background-color: #f8f9fa;
-    border-radius: 4px;
-    font-family: monospace;
-    font-size: 14px;
-    white-space: pre-wrap;
-}
-
-@media (max-width: 768px) {
-    .generator-container {
-        flex-direction: column;
-    }
-}
-</style>
