@@ -12,7 +12,8 @@ from app.core.logging import setup_logging
 from app.core.events import lifespan
 from app.api.dependencies import get_api_version
 from app.api.routes.health import router as health_router
-from app.api.routes.csv_files import router as csv_files_router  # Import the new CSV files router
+# from app.api.routes.csv_files import router as csv_files_router  # Original CSV router
+from app.api.routes.data import router as data_router  # New data generation router
 from app.api.error_handlers import setup_exception_handlers
 
 
@@ -48,7 +49,8 @@ async def root():
 
 # Register routers
 app.include_router(health_router)
-app.include_router(csv_files_router)  # Register the CSV files router
+# app.include_router(csv_files_router)  # Original CSV files router
+app.include_router(data_router)       # New data generation router with format support
 
 
 # Setup exception handlers

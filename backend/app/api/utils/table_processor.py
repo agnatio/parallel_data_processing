@@ -326,3 +326,67 @@ class TableProcessor:
         except Exception as e:
             logger.error(f"Error analyzing CSV: {str(e)}")
             raise ValueError(f"Error analyzing CSV: {str(e)}")
+        
+    @classmethod
+    def table_to_json_response(cls, table: List[List[Any]]) -> Dict[str, Any]:
+        """
+        Convert a table (list of lists) to a structured JSON response with metadata.
+        
+        Args:
+            table: The table data as a list of lists
+            
+        Returns:
+            Dictionary with metadata and data ready for JSON serialization
+        """
+        if not table or len(table) < 2:
+            return {"metadata": {"rows": 0, "columns": 0, "headers": []}, "data": []}
+        
+        headers = table[0]
+        json_data = cls.table_to_json(table)
+        
+        return {
+            "metadata": {
+                "rows": len(table) - 1,  # Subtract header row
+                "columns": len(headers),
+                "headers": headers
+            },
+            "data": json_data
+        }
+
+    @classmethod
+    def generate_sample_json(cls, sample_type: str, rows: int = 100) -> Dict[str, Any]:
+        """
+        Generate a sample dataset in JSON format.
+        
+        Args:
+            sample_type: Type of sample to generate (users, products, transactions)
+            rows: Number of rows to generate
+            
+        Returns:
+            Dictionary with metadata and data ready for JSON serialization
+        """
+        if sample_type == "users":
+            data_types = ["integer", "name", "email", "date", "boolean"]
+            headers = ["id", "full_name", "email", "registration_date", "is_active"]
+        
+        elif sample_type == "products":
+            data_types = ["integer", "product", "price", "integer", "boolean"]
+            headers = ["id", "product_name", "price", "stock", "in_stock"]
+        
+        elif sample_type == "transactions":
+            data_types = ["integer", "integer", "date", "price", "string"]
+            headers = ["id", "user_id", "transaction_date", "amount", "status"]
+        
+        else:
+            # Default to a generic table
+            return cls.table_to_json_response(cls.generate_table_data(num_rows=rows, num_cols=5))
+        
+        # Generate data with specific headers
+        table = [headers]
+        for _ in range(rows):
+            row = []
+            for dtype in data_types:
+                row.append(cls._generate_value_for_type(dtype))
+            table.append(row)
+        
+        return cls.table_to_json_response(table)
